@@ -1,5 +1,4 @@
 import {Workbox} from 'workbox-window/Workbox.mjs';
-import {ga, dimensions, addPreSendDependency, trackError, NULL_VALUE} from './analytics';
 import {loadPage} from './content-loader';
 import * as messages from './messages';
 import {initialSWState} from './sw-state';
@@ -10,6 +9,8 @@ import {initialSWState} from './sw-state';
 export const wb = new Workbox('/sw.js');
 
 const setSiteVersionOrTimeout = async () => {
+  const {ga, dimensions, NULL_VALUE} = await import('./analytics');
+
   // Set the site version, if available.
   const {version} = await new Promise((resolve) => {
     // Uncontrolled pages won't have a version.
@@ -26,6 +27,8 @@ const setSiteVersionOrTimeout = async () => {
 };
 
 const setNavigationCacheOrTimeout = async () => {
+  const {ga, dimensions, NULL_VALUE} = await import('./analytics');
+
   // Before sending any perf data, determine whether the page was served
   // entirely cache-first.
   const {cacheHit} = await new Promise((resolve) => {
@@ -110,7 +113,7 @@ const addFirstInstalledListener = () => {
 const addCacheUpdateListener = () => {
   // Listen for cache update messages and swap out the content.
   // TODO(philipwalton): consider whether this is the best UX.
-  wb.addEventListener('message', ({data}) => {
+  wb.addEventListener('message', async ({data}) => {
     if (data.type === 'CACHE_UPDATED') {
       const {updatedURL} = data.payload;
 
@@ -119,6 +122,7 @@ const addCacheUpdateListener = () => {
       // it occurs to get a bit more insight into any UX concerns.
       loadPage(updatedURL);
 
+      const {ga} = await import('./analytics');
       ga('send', 'event', {
         eventCategory: 'Cache Update',
         eventAction: 'receive',
@@ -130,8 +134,10 @@ const addCacheUpdateListener = () => {
 
 
 const addSWUpdateListener = () => {
-  wb.addEventListener('message', ({data}) => {
+  wb.addEventListener('message', async ({data}) => {
     if (data.type === 'UPDATE_AVAILABLE') {
+      const {ga, NULL_VALUE, trackError} = await import('./analytics');
+
       // Default to showing an update message. This is helpful in the event
       // a future version causes an error parsing the message data, the
       // default will be to still show an update notification.
@@ -202,6 +208,7 @@ export const init = async () => {
 
   await wb.register();
 
+  const {addPreSendDependency} = await import('./analytics');
   addPreSendDependency(setSiteVersionOrTimeout());
   addPreSendDependency(setNavigationCacheOrTimeout());
 };

@@ -1,5 +1,4 @@
 import * as alerts from './alerts';
-import {ga, dimensions, trackError} from './analytics';
 import * as drawer from './drawer';
 import History2 from './history2';
 import {now} from './performance';
@@ -42,6 +41,7 @@ const fetchPageContent = async (path) => {
     const responseSource =
         response.headers.get('X-Cache-Hit') ? 'cache' : 'network';
 
+    const {ga} = await import('./analytics');
     ga('send', 'event', {
       page: path,
       eventCategory: 'Virtual Pageviews',
@@ -116,6 +116,8 @@ const setScroll = (hash) => {
  * @param {string} pathname
  */
 const trackPageview = async (pathname) => {
+  const {ga, dimensions} = await import('./analytics');
+
   ga('set', 'page', pathname);
   ga('send', 'pageview', {[dimensions.HIT_SOURCE]: 'SPA'});
 };
@@ -144,6 +146,8 @@ export const init = () => {
       setScroll(state.hash);
       trackPageview(state.pathname);
     } catch (err) {
+      const {trackError} = await import('./analytics');
+
       trackError(/** @type {!Error} */ (err));
       throw err;
     }

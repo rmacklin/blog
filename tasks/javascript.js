@@ -66,7 +66,7 @@ const compileModuleBundle = async () => {
   }
 
   const bundle = await rollup({
-    input: 'assets/javascript/main.js',
+    input: 'assets/javascript/main-module.js',
     cache: moduleBundleCache,
     plugins,
     manualChunks,
@@ -82,6 +82,7 @@ const compileModuleBundle = async () => {
     format: 'esm',
     chunkFileNames: '[name]-[hash].mjs',
     entryFileNames: '[name]-[hash].mjs',
+    dynamicImportFunction: '__import__',
   });
 };
 
@@ -114,7 +115,7 @@ const compileClassicBundle = async () => {
   }
 
   const bundle = await rollup({
-    input: 'assets/javascript/nomodule.js',
+    input: 'assets/javascript/main-nomodule.js',
     cache: nomoduleBundleCache,
     plugins,
     preserveSymlinks: true, // Needed for `file:` entries in package.json.
