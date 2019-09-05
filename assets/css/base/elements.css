@@ -104,11 +104,6 @@ a > code {
   padding-right: 0;
 }
 
-mark {
-  background-color: transparent;
-  color: inherit;
-}
-
 blockquote {
   border-left: 4px solid hsl(0, 0%, 93%);
   color: hsl(0, 0%, 50%);

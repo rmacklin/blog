@@ -1,6 +1,6 @@
-import {StaleWhileRevalidate} from 'workbox-strategies/StaleWhileRevalidate.mjs';
-import {isSupported as streamsAreSupported} from 'workbox-streams/isSupported.mjs';
-import {messageWindows} from './messenger.js';
+import {StaleWhileRevalidate} from 'workbox-strategies/StaleWhileRevalidate';
+import {isSupported as streamsAreSupported} from 'workbox-streams/isSupported';
+import {messageWindows} from './messenger';
 
 
 /* eslint require-jsdoc: 0 */

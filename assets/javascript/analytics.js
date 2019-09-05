@@ -145,6 +145,7 @@ const createTracker = () => {
 
   // Log hits in development.
   if (process.env.NODE_ENV !== 'production') {
+    /*
     ga((tracker) => {
       const originalSendHitTask = tracker.get('sendHitTask');
       tracker.set('sendHitTask', (model) => {
@@ -176,6 +177,7 @@ const createTracker = () => {
         console.log(...parts, hit);
       });
     });
+    */
   }
 };
 
