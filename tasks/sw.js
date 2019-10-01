@@ -7,7 +7,7 @@ const replace = require('rollup-plugin-replace');
 const resolve = require('rollup-plugin-node-resolve');
 const terserRollupPlugin = require('rollup-plugin-terser').terser;
 const {getManifest, getRevisionedAssetUrl} = require('./utils/assets');
-const {checkModuleDuplicates} = require('./utils/check-module-duplicates');
+const {checkDuplicatesPlugin} = require('./utils/check-duplicates-plugin');
 const {ENV} = require('./utils/env');
 
 
@@ -29,7 +29,11 @@ gulp.task('sw', async () => {
     }
 
     const plugins = [
-      resolve(),
+      resolve({
+        customResolveOptions: {
+          moduleDirectory: '../../GoogleChrome/workbox/packages',
+        },
+      }),
       replace({
         'process.env.NODE_ENV': JSON.stringify(ENV),
         '__VERSION__': JSON.stringify(version),
@@ -38,6 +42,7 @@ gulp.task('sw', async () => {
         '__SHELL_START_PATH__': JSON.stringify(shellStartPath),
         '__SHELL_END_PATH__': JSON.stringify(shellEndPath),
       }),
+      checkDuplicatesPlugin(),
     ];
     if (ENV !== 'development') {
       plugins.push(terserRollupPlugin({
@@ -54,8 +59,6 @@ gulp.task('sw', async () => {
       input: 'assets/sw/sw.js',
       plugins,
     });
-
-    checkModuleDuplicates(bundle.cache.modules.map((m) => m.id));
 
     await bundle.write({
       file: 'build/sw.js',
