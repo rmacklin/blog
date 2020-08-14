@@ -1,56 +1,27 @@
-import {deleteUnusedCaches} from './caches.js';
-import {messageWindows} from './messenger.js';
-import {getStoredMetadata, getAndUpdateMetadata} from './metadata.js';
-import * as precache from './precache.js';
-import * as router from './router.js';
+/* global __PRECACHE_MANIFEST__ */
 
+import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
+import {PrecacheRoute} from 'workbox-precaching/PrecacheRoute.mjs';
+// import {PrecacheShellRoute} from 'workbox-precaching/PrecacheShellRoute.mjs';
+import {PrecacheStrategy} from 'workbox-precaching/PrecacheStrategy.mjs';
 
-let metadataChanges;
+import {registerRoute} from 'workbox-routing/registerRoute.mjs';
+// import {CacheFirst} from 'workbox-strategies/CacheFirst.mjs';
+// import {cacheNames} from './caches.js';
 
-precache.init();
-router.init();
+const v = '2';
+console.log(v);
 
-addEventListener('install', (event) => {
-  skipWaiting();
+// const strategy = new PrecacheStrategy({cacheName: cacheNames.SHELL});
 
-  const installComplete = async () => {
-    await precache.install({event});
-    metadataChanges = await getAndUpdateMetadata();
-  };
-  event.waitUntil(installComplete());
-});
+const strategy = new PrecacheStrategy({cacheName: 'my-precache'});
+// const strategy = new CacheFirst({cacheName: 'my-runtime-cache'});
 
-addEventListener('activate', (event) => {
-  clients.claim();
+const pc = new PrecacheController({strategy});
+pc.precache(__PRECACHE_MANIFEST__);
 
-  const activateComplete = async () => {
-    if (metadataChanges) {
-      // IMPORTANT!
-      // When sending data to the window in an update event, remember that the
-      // code that gets served to the page may be an incompatible version.
-      // Take care when updating the format of the data being sent.
-      await messageWindows({
-        type: 'UPDATE_AVAILABLE',
-        payload: metadataChanges,
-      });
-    }
+// registerRoute(new PrecacheNavigateFallbackRoute(pc, {url: '/shell-start.html'}));
+registerRoute(new PrecacheRoute(pc));
 
-    // Run these in parallel so any one of them erroring won't prevent the
-    // other ones from finishing.
-    await Promise.all([
-      precache.activate({event}),
-      deleteUnusedCaches(),
-    ]);
-  };
-  event.waitUntil(activateComplete());
-});
-
-addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'GET_METADATA') {
-    const replySent = async () => {
-      const metadata = await getStoredMetadata();
-      event.ports && event.ports[0].postMessage(metadata);
-    };
-    event.waitUntil(replySent());
-  }
-});
+self.skipWaiting();
+addEventListener('activate', () => clients.claim());

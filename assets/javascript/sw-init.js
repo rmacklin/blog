@@ -220,14 +220,14 @@ export const init = async () => {
   // `navigator.serviceWorker`, which will be undefined in older browsers.
   wb = new Workbox('/sw.js');
 
-  addNavigationReportListener();
-  addFirstInstalledListener();
-  addCacheUpdateListener();
-  addSWUpdateListener();
+  // addNavigationReportListener();
+  // addFirstInstalledListener();
+  // addCacheUpdateListener();
+  // addSWUpdateListener();
 
-  const {log} = await import('./log');
-  log.awaitBeforeSending(setSiteVersionOrTimeout());
-  log.awaitBeforeSending(setNavigationCacheOrTimeout());
+  // const {log} = await import('./log');
+  // log.awaitBeforeSending(setSiteVersionOrTimeout());
+  // log.awaitBeforeSending(setNavigationCacheOrTimeout());
 
   // Calling register must happen after all presend dependencies get added.
   await wb.register();

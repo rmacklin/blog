@@ -38,6 +38,13 @@ gulp.task('sw', async () => {
     }
 
     const plugins = [
+      {
+        resolveId(source, importer) {
+          if (source.startsWith('workbox-')) {
+            return path.resolve('../../GoogleChrome/workbox/packages', source);
+          }
+        }
+      },
       resolve(),
       replace({
         'process.env.NODE_ENV': JSON.stringify(ENV),

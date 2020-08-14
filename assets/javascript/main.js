@@ -9,8 +9,8 @@ const initServiceWorker = async () => {
     try {
       await sw.init();
     } catch (err) {
-      const log = await import('./log.js');
-      log.trackError(err);
+      // const log = await import('./log.js');
+      // log.trackError(err);
     }
   }
 };
@@ -35,5 +35,5 @@ export const main = async () => {
   // NOTE: make sure `initServiceWorker()` finishes before running
   // `initLog()` because it needs to add pre-send dependencies.
   await initServiceWorker();
-  await initLog();
+  // await initLog();
 };
