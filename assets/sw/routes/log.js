@@ -3,8 +3,6 @@ import {NetworkOnly} from 'workbox-strategies';
 import {BackgroundSyncPlugin} from 'workbox-background-sync';
 
 
-const SERVICE_WORKER_REPLAY_DIMENSION = 'cd8';
-
 const logMatcher = ({url}) => {
   return url.hostname === location.hostname && url.pathname === '/log';
 };
@@ -12,19 +10,20 @@ const logMatcher = ({url}) => {
 const logStrategy = new NetworkOnly({
   plugins: [
     new BackgroundSyncPlugin('log', {
-      maxRetentionTime: 60 * 24 * 2, // Retry for 2 days.
+      maxRetentionTime: 60 * 24 * 4, // Retry for 4 days.
       async onSync({queue}) {
         let entry;
         while (entry = await queue.shiftRequest()) {
           const {request} = entry;
           try {
-            const params = new URLSearchParams(await request.clone().text());
-            params.set(SERVICE_WORKER_REPLAY_DIMENSION, 'replay');
+            const originalBody = await request.clone().text();
+            const body = originalBody.split(/\n/).map((event) => {
+              const params = new URLSearchParams(event);
+              params.set('ep.sw_replay', true);
+              return params.toString();
+            }).join('\n');
 
-            await fetch(new Request(request.url, {
-              body: params.toString(),
-              method: 'POST',
-            }));
+            await fetch(new Request(request.url, {body, method: 'POST'}));
           } catch (err) {
             await queue.unshiftRequest(entry);
             throw err;
