@@ -14,6 +14,27 @@ const staticAssetsStrategy = new CacheFirst({
     new ExpirationPlugin({
       maxEntries: 100,
     }),
+    // TODO: add plugin to set cache hit status via Server Timing. If not
+    // a cache hit set transfer size via Resource Timing.
+    // {
+    //   handlerWillRespond({response}) {
+    //     console.log('content-length', response.headers.get('content-length'));
+    //     return response;
+    //   },
+    //   cacheWillUpdate({response, event}) {
+    //     console.log({response});
+
+
+    //     setTimeout(() => {
+    //       const matchingEntry = performance.getEntriesByType('resource').find(e => e.name === response.url);
+    //       console.log({ matchingEntry,
+    //       resources: performance.getEntriesByType('resource'),});
+    //     }, 1000);
+
+
+    //     return response;
+    //   }
+    // },
   ],
 });
 

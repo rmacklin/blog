@@ -30,6 +30,6 @@ export const main = async () => {
   // Everything after this includes dynamic imports.
   // NOTE: make sure `initServiceWorker()` finishes before running
   // `initLog()` because it needs to add pre-send dependencies.
-  await initServiceWorker();
+  // await initServiceWorker();
   await initLog();
 };

@@ -177,6 +177,8 @@ export class Logger {
       prefixedParams._et = engagedTime;
     }
 
+    console.log(prefixedParams);
+
     this._eventQueue.push(prefixedParams);
 
     if (visibilityState === 'hidden') {

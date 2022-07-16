@@ -1,10 +1,7 @@
 <!-- Track errors -->
-<script>addEventListener('error', self.__e=function f(e){f.q=f.q||[];f.q.push(e)});</script>
+<script type="module">addEventListener('error', self.__e=function f(e){f.q=f.q||[];f.q.push(e)});</script>
 
 {% if EXPERIMENT %}
   <!-- Set an experiment global -->
-  <script>self.__x = '{{ EXPERIMENT }}'</script>
+  <script type="module">self.__x = '{{ EXPERIMENT }}'</script>
 {% endif %}
-
-<!-- Track FID -->
-<script>{{ 'npm:web-vitals/dist/polyfill.js' | inline }}</script>

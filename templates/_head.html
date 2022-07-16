@@ -10,8 +10,6 @@
   {% endif %}
 </title>
 
-{% include '_log.html' %}
-
 <style>{{ 'main.css' | revision | inline }}</style>
 
 <!-- Generated via: realfavicongenerator.net and modified -->
@@ -41,3 +39,39 @@
     {% endif %}
   {% endif %}
 {% endif %}
+
+<script>
+  new PerformanceObserver((list) => {
+    for (const entry of list.getEntries()) {
+      if (entry.name === 'first-contentful-paint') {
+        console.log('paint!', entry.startTime, performance.now());
+
+        const startTime = performance.now();
+        console.log('start blocking', startTime);
+        while (performance.now() < startTime + 800) {
+          // Do nothing...
+        }
+        console.log('stop blocking', performance.now());
+
+
+        setTimeout(() => {
+          const startTime2 = performance.now();
+          console.log('start blocking', startTime2);
+          while (performance.now() < startTime2 + 700) {
+            // Do nothing...
+          }
+          console.log('stop blocking', performance.now());
+
+          setTimeout(() => {
+            const startTime3 = performance.now();
+            console.log('start blocking', startTime3);
+            while (performance.now() < startTime3 + 600) {
+              // Do nothing...
+            }
+            console.log('stop blocking', performance.now());
+          }, 0);
+        }, 0);
+      }
+    }
+  }).observe({type: 'paint', buffered: true});
+</script>
