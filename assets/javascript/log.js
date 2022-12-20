@@ -271,6 +271,17 @@ const trackLCP = async () => {
           metric.value),
       event_id: metric.id,
     });
+
+    // If the LCP element is an image, send a hint for the next visitor.
+    const {element, lcpEntry} = metric.attribution;
+    if (
+      lcpEntry &&
+      lcpEntry.url &&
+      lcpEntry.element?.tagName.toLowerCase() === 'img'
+    ) {
+      navigator.sendBeacon('/hint', [location.pathname, element].join('\n'));
+      console.log(element, lcpEntry);
+    }
   }, {reportAllChanges: true});
 };
 
